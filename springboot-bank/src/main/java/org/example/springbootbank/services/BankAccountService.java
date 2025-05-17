@@ -2,6 +2,7 @@ package org.example.springbootbank.services;
 
 
 
+import org.example.springbootbank.dtos.CustomerDTO;
 import org.example.springbootbank.entities.BankAccount;
 import org.example.springbootbank.entities.CurrentAccount;
 import org.example.springbootbank.entities.Customer;
@@ -14,9 +15,9 @@ import java.util.List;
 
 public interface BankAccountService {
     Customer saveCustomer(Customer customer);
-    CurrentAccount saveCurrentBankAccount(double initialBalance, double overDraft, String customerId) throws CustomerNotFoundException;
-    SavingAccount saveSavingBankAccount(double initialBalance, double interestRate, String customerId) throws CustomerNotFoundException;
-    List<Customer> listCustomers();
+    CurrentAccount saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException;
+    SavingAccount saveSavingBankAccount(double initialBalance, double interestRate, Long customerId) throws CustomerNotFoundException;
+    List<CustomerDTO> listCustomers();
     BankAccount getBankAccount(String accountId) throws BankAccountNotFoundException;
     void debit(String accountId, double amount, String description) throws BankAccountNotFoundException, BalanceNotSufficientException;
     void credit(String accountId, double amount, String description) throws BankAccountNotFoundException;

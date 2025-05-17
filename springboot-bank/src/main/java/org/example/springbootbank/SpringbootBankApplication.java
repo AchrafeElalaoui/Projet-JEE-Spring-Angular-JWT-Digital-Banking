@@ -26,7 +26,6 @@ public class SpringbootBankApplication {
 		return args -> {
 			Stream.of("khadija", "yassir", "oma").forEach(name -> {
 				Customer customer = new Customer();
-				customer.setId(name);
 				customer.setName(name);
 				customer.setEmail(name + "@gmail.com");
 				customerRepository.save(customer);
