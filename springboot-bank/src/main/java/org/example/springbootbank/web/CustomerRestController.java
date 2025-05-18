@@ -4,6 +4,7 @@ package org.example.springbootbank.web;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.springbootbank.dtos.CustomerDTO;
+import org.example.springbootbank.exceptions.CustomerNotFoundException;
 import org.example.springbootbank.services.BankAccountService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,11 @@ public class CustomerRestController {
     public List<CustomerDTO> customers() {
         log.info("Retrieving all customers");
         return bankAccountService.listCustomers();
+    }
+    @GetMapping("/customers/{customerId}")
+    public CustomerDTO customer(@PathVariable Long customerId) throws CustomerNotFoundException {
+        log.info("Retrieving the customer with id {}", customerId);
+        return bankAccountService.getCustomer(customerId);
     }
     @PostMapping("/customers")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO) {

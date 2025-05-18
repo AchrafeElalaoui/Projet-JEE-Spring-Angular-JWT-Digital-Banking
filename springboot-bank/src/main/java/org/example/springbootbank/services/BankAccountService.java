@@ -2,10 +2,7 @@ package org.example.springbootbank.services;
 
 
 
-import org.example.springbootbank.dtos.BankAccountDTO;
-import org.example.springbootbank.dtos.CurrentBankAccountDTO;
-import org.example.springbootbank.dtos.CustomerDTO;
-import org.example.springbootbank.dtos.SavingBankAccountDTO;
+import org.example.springbootbank.dtos.*;
 import org.example.springbootbank.entities.BankAccount;
 import org.example.springbootbank.entities.CurrentAccount;
 import org.example.springbootbank.entities.Customer;
@@ -29,8 +26,12 @@ public interface BankAccountService {
 
     CustomerDTO getCustomer(Long customerId) throws CustomerNotFoundException;
 
-    List<BankAccount> bankAccountList();
+    List<BankAccountDTO> bankAccountList();
     CustomerDTO updateCustomer(CustomerDTO customerDTO);
 
     void deleteCustomer(Long customerId);
+
+    List<AccountOperationDTO> getAccountHistory(String accountId) throws BankAccountNotFoundException;
+
+    AccountHistoryDTO getAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException;
 }

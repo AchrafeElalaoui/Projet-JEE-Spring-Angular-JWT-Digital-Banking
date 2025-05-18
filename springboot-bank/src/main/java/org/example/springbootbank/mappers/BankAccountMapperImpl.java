@@ -66,5 +66,21 @@ public class BankAccountMapperImpl {
         return bankAccountDTO;
     }
 
+    public AccountOperationDTO fromAccountOperation(AccountOperation accountOperation) {
+        AccountOperationDTO accountOperationDTO = new AccountOperationDTO();
+        BeanUtils.copyProperties(accountOperation, accountOperationDTO);
+        return accountOperationDTO;
+    }
 
+    public AccountOperation fromAccountOperationDTO(AccountOperationDTO accountOperationDTO) {
+        AccountOperation accountOperation = new AccountOperation();
+        BeanUtils.copyProperties(accountOperationDTO, accountOperation);
+        return accountOperation;
+    }
+
+    public List<AccountOperationDTO> fromAccountOperationList(List<AccountOperation> accountOperations) {
+        return accountOperations.stream()
+                .map(this::fromAccountOperation)
+                .collect(Collectors.toList());
+    }
 }
