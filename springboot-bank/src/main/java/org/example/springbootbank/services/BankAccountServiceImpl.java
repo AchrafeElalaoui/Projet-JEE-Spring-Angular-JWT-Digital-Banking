@@ -6,7 +6,10 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.example.springbootbank.dtos.BankAccountDTO;
+import org.example.springbootbank.dtos.CurrentBankAccountDTO;
 import org.example.springbootbank.dtos.CustomerDTO;
+import org.example.springbootbank.dtos.SavingBankAccountDTO;
 import org.example.springbootbank.entities.*;
 import org.example.springbootbank.exceptions.BalanceNotSufficientException;
 import org.example.springbootbank.exceptions.BankAccountNotFoundException;
@@ -34,14 +37,15 @@ public class BankAccountServiceImpl implements BankAccountService{
 
 
     @Override
-    public Customer saveCustomer(Customer customer) {
+    public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
         log.info("Saving new customer");
+        Customer customer = bankAccountMapper.fromCustomerDTO(customerDTO);
         Customer savedCustomer = customerRepository.save(customer);
-        return savedCustomer;
+        return bankAccountMapper.fromCustomer(savedCustomer);
     }
 
     @Override
-    public CurrentAccount saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException {
+    public CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException {
         Customer customer = customerRepository.findById(customerId).orElse(null);
         if (customer == null) {
             throw new CustomerNotFoundException("Customer not found");
@@ -54,11 +58,11 @@ public class BankAccountServiceImpl implements BankAccountService{
         currentAccount.setOverDraft(overDraft);
         log.info("Saving new current account");
         CurrentAccount savedBankAccount = bankAccountRepository.save(currentAccount);
-        return currentAccount;
+        return bankAccountMapper.fromCurrentBankAccount(savedBankAccount);
     }
 
     @Override
-    public SavingAccount saveSavingBankAccount(double initialBalance, double interestRate, Long customerId) throws CustomerNotFoundException {
+    public SavingBankAccountDTO saveSavingBankAccount(double initialBalance, double interestRate, Long customerId) throws CustomerNotFoundException {
         Customer customer = customerRepository.findById(customerId).orElse(null);
         if (customer == null) {
             throw new CustomerNotFoundException("Customer not found");
@@ -71,7 +75,7 @@ public class BankAccountServiceImpl implements BankAccountService{
         savingAccount.setInterestRate(interestRate);
         log.info("Saving new saving account");
         SavingAccount savedBankAccount = bankAccountRepository.save(savingAccount);
-        return savingAccount;
+        return bankAccountMapper.fromSavingBankAccount(savedBankAccount);
     }
 
 
@@ -84,16 +88,18 @@ public class BankAccountServiceImpl implements BankAccountService{
         return customerDTOS;
     }
 
+
     @Override
-    public BankAccount getBankAccount(String accountId) throws BankAccountNotFoundException {
+    public BankAccountDTO getBankAccount(String accountId) throws BankAccountNotFoundException {
         BankAccount bankAccount = bankAccountRepository.findById(accountId)
                 .orElseThrow(() -> new BankAccountNotFoundException("Bank account not found"));
-        return bankAccount;
+        return bankAccountMapper.fromBankAccount(bankAccount);
     }
 
     @Override
     public void debit(String accountId, double amount, String description) throws BankAccountNotFoundException, BalanceNotSufficientException {
-        BankAccount bankAccount = getBankAccount(accountId);
+        BankAccount bankAccount = bankAccountRepository.findById(accountId)
+                .orElseThrow(() -> new BankAccountNotFoundException("Bank account not found"));
         if (bankAccount.getBalance() < amount) {
             throw new BalanceNotSufficientException("Insufficient balance");
         }
@@ -107,15 +113,12 @@ public class BankAccountServiceImpl implements BankAccountService{
         bankAccount.setBalance(bankAccount.getBalance() - amount);
         log.info("Debiting account: " + accountId + " with amount: " + amount);
         bankAccountRepository.save(bankAccount);
-
-
-
-
     }
 
     @Override
     public void credit(String accountId, double amount, String description) throws BankAccountNotFoundException {
-        BankAccount bankAccount = getBankAccount(accountId);
+        BankAccount bankAccount = bankAccountRepository.findById(accountId)
+                .orElseThrow(() -> new BankAccountNotFoundException("Bank account not found"));
         AccountOperation accountOperation = new AccountOperation();
         accountOperation.setDate(new Date());
         accountOperation.setAmount(amount);
@@ -126,7 +129,6 @@ public class BankAccountServiceImpl implements BankAccountService{
         bankAccount.setBalance(bankAccount.getBalance() + amount);
         log.info("Crediting account: " + accountId + " with amount: " + amount);
         bankAccountRepository.save(bankAccount);
-
     }
 
     @Override
@@ -138,11 +140,29 @@ public class BankAccountServiceImpl implements BankAccountService{
 
 
     }
-
     @Override
     public List<BankAccount> bankAccountList() {
         return bankAccountRepository.findAll();
     }
+    @Override
+    public CustomerDTO getCustomer(Long customerId) throws CustomerNotFoundException {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found"));
+        return bankAccountMapper.fromCustomer(customer);
+    }
 
+
+
+    @Override
+    public CustomerDTO updateCustomer(CustomerDTO customerDTO) {
+        log.info("Saving new customer");
+        Customer customer = bankAccountMapper.fromCustomerDTO(customerDTO);
+        Customer savedCustomer = customerRepository.save(customer);
+        return bankAccountMapper.fromCustomer(savedCustomer);
+    }
+    @Override
+    public void deleteCustomer(Long customerId) {
+        customerRepository.deleteById(customerId);
+    }
 
 }
