@@ -12,6 +12,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @AllArgsConstructor
+@CrossOrigin("*")
 public class BankAccountRestController {
     BankAccountServiceImpl bankAccountService;
 

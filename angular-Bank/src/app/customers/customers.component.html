@@ -1,1 +1,48 @@
-<p>customers works!</p>
+<div class="container mt-2">
+  <ng-container *ngIf="listCustomers$ | async as customers; else failureOrLoading">
+    <div class="card">
+      <div class="card-header">Customers</div>
+      <div class="card-body" >
+        <div *ngIf="searchFormGroup">
+          <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchCustomers()">
+            <div class="input-group">
+              <label class="input-group-text">Keyword :</label>
+              <input type="text" formControlName="keyword" class="form-control">
+              <button class="btn btn-info">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let customer of customers">
+            <td>{{customer.id}}</td>
+            <td>{{customer.name}}</td>
+            <td>{{customer.email}}</td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-template #failureOrLoading>
+    <div *ngIf="errorMessage; else loading" class="alert alert-danger">
+      {{errorMessage}}
+    </div>
+    <ng-template #loading>
+      <div class="alert alert-info">
+        Loading...
+      </div>
+    </ng-template>
+  </ng-template>
+</div>
