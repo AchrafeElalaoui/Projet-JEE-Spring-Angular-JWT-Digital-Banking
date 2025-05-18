@@ -29,6 +29,10 @@
             <td>{{customer.id}}</td>
             <td>{{customer.name}}</td>
             <td>{{customer.email}}</td>
+            <td>
+              <button class="btn btn-danger" (click)="handleDeleteCustomer(customer)">
+                <i class="bi bi-trash"></i>
+              </button>
           </tbody>
         </table>
       </div>
