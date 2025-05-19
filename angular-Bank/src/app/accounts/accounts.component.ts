@@ -4,6 +4,7 @@ import {AccountsService} from '../services/accounts.service';
 import {Observable, catchError, throwError} from 'rxjs';
 import {AccountDetails} from '../models/account.model';
 import {AsyncPipe, CommonModule} from '@angular/common';
+import {AuthService} from '../services/auth.service';
 
 @Component({
   selector: 'app-accounts',
@@ -25,7 +26,7 @@ export class AccountsComponent implements OnInit {
   operationFormGroup!: FormGroup;
   currentOperationType: string = '';
 
-  constructor(private fb: FormBuilder, private accountService: AccountsService) { }
+  constructor(private fb: FormBuilder, private accountService: AccountsService,public authService:AuthService) { }
 
   ngOnInit(): void {
     this.accountFormGroup = this.fb.group({
@@ -38,7 +39,6 @@ export class AccountsComponent implements OnInit {
       accountDestination: this.fb.control(null)
     });
 
-    // Subscribe to operationType changes
     this.operationFormGroup.get('operationType')?.valueChanges.subscribe(value => {
       this.currentOperationType = value;
     });

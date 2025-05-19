@@ -4,6 +4,7 @@ import {CustomerService} from '../services/customer.service';
 import {Observable, catchError, of, startWith, throwError, map} from 'rxjs';
 import {Customer} from '../models/customer.model';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-customers',
@@ -19,7 +20,7 @@ export class CustomersComponent implements OnInit {
   listCustomers$!: Observable<Array<Customer> | null>;
   searchFormGroup: FormGroup | undefined;
 
-  constructor(private customerService : CustomerService, private fb : FormBuilder) {}
+  constructor(private customerService : CustomerService, private fb : FormBuilder,private router:Router) {}
 
   ngOnInit(): void {
     this.searchFormGroup = this.fb.group({
@@ -27,9 +28,10 @@ export class CustomersComponent implements OnInit {
     })
 
     this.listCustomers$ = this.customerService.getCustomers().pipe(
+      startWith(null),
       catchError(err => {
         this.errorMessage = err.message;
-        return throwError(err);
+        return of(null);
       })
     );
   }
@@ -42,8 +44,8 @@ export class CustomersComponent implements OnInit {
       })
     );
 
-
   }
+
   handleDeleteCustomer(customer: Customer) {
     this.customerService.deleteCustomer(customer.id).subscribe({
       next: (resp)=> {
@@ -60,5 +62,10 @@ export class CustomersComponent implements OnInit {
       }
     });
   }
-}
 
+  handleCustomerAccount(customer: Customer) {
+    this.router.navigateByUrl("/customer-accounts/"+customer.id,{state: customer});
+
+
+  }
+}
